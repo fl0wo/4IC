@@ -1,2 +1,3 @@
 ## PISCIOTTA DAVIDE
-Questo è il branch di Pisciotta Davide
+# IDE impiegati:
+- java: IntelliJ IDEA
