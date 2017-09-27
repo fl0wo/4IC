@@ -6,67 +6,69 @@ import java.util.concurrent.TimeUnit;
 
 public class FileClock implements Runnable {
     
+    private Thread[] array;
+    private int numero;
+    private Random r = new Random();
     
-    Thread[] threads;
-    int posizione;
-    Random r = new Random();
-    Thread interrompi;
-    
-    public FileClock(Thread[] threads, int posizione) {
-        this.threads = threads;
-        this.posizione = posizione;
+    public FileClock(Thread[] array, int numero) {
+        this.array = array;
+        this.numero = numero;
     }
-    
-    
-    
+
     @Override
     public void run() {
-        while(true) {
-            System.out.println(""+this.posizione+" "+ new Date());
+        
+        int random = r.nextInt(10);
+        
+        for (int i = 0; i < 10; i++) {
+            System.out.printf("%s\n", new Date());
             try {
                 TimeUnit.SECONDS.sleep(1);
-                this.interrompi = this.threads[new Random().nextInt(threads.length)];
             } catch (InterruptedException e) {
-                System.out.println("The FileClock "+this.posizione+" has been interrupted");
-                threads=eliminaThread(threads);
+                System.out.println("I, "+this.numero+" have been itnerrupted");
+                break;// cosi esche dal for e di conseguenza finisce il metodo run
+                //oppure return; cosi da uccidere il thread e concludere il metodo run 
+            }
+            
+            if(i==random){
+                interrompiUnThread();
+                random = i + r.nextInt(10-i);
+            }
+            if(sonoUltimo()){
+                System.out.println("I , "+this.numero+" am the last thread alive , i decide to commit a suicide");
                 return;
             }
-            interrompi();
         }
     }
 
-    
-    private void interrompi() {
-        if(sonoLunicoThreadInVita()){
-            System.out.println("Im the last alive "+this.posizione);
-            Thread.currentThread().interrupt();
-        }
-        else{
-            this.interrompi.interrupt();
+    private void interrompiUnThread() {
+        int posizioneThread = prendiPosizione();
+        Thread daInterrompere = this.array[posizioneThread];
+        
+        if(daInterrompere!=null){
+            if(daInterrompere.isAlive()){
+                this.array[posizioneThread].interrupt();
+                System.out.println("I "+this.numero+" have interrupted the Thread number "+posizioneThread);
+            }
         }
     }
-    
-    
-    private boolean sonoLunicoThreadInVita() {
-        for (int i = 0; i < this.threads.length; i++) {
-            if(this.threads[i].isAlive() && this.threads[i]!=Thread.currentThread()){
+
+    private int prendiPosizione() {
+        // pos cas da 0 a thread.lenght ma != this.posizione
+        
+        int caso = r.nextInt(this.array.length);
+        while(caso == this.numero){
+            caso=r.nextInt(this.array.length);
+        }
+        return caso;
+    }
+
+    private boolean sonoUltimo() {
+        for (int i = 0; i < this.array.length; i++) {
+            if(this.array[i].isAlive() && this.array[i]!= Thread.currentThread()){
                 return false;
             }
         }
         return true;
-    }
-    
-    
-    private Thread[] eliminaThread(Thread[] threads) {
-        Thread[] t = new Thread[threads.length-1];
-        for (int i = 0; i < t.length; i++) {
-            if(threads[i]!= Thread.currentThread()){
-                t[i] = threads[i];
-            }
-            else{
-                System.out.println("Find Myself: "+this.posizione);
-            }
-        }
-        return t;
     }
 }

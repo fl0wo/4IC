@@ -1,19 +1,31 @@
 package testfiletime;
 
+import java.util.concurrent.TimeUnit;
 
 public class TestFileClock {
 
-    public static void main(String[] args) throws InterruptedException {
-        Thread[] thread = new Thread[20];
+    public static void main(String[] args) {
+        Thread[] thread = new Thread[10];
         for (int i = 0; i < thread.length; i++) {
-            thread[i] = new Thread(new FileClock(thread, i));
+            thread[i] = new Thread(new FileClock(thread,i));    // nonostante thread non sia ancora full gli passo il reference
         }
-        startaThreads(thread);
+        avviaThread(thread);
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Finish");
     }
 
-    private static void startaThreads(Thread[] thread) {
-        for (Thread thread1 : thread) {
-            thread1.start();
+    public static void avviaThread(Thread[] t) {
+        for (int i = 0; i < t.length; i++) {
+            t[i].start();
         }
     }
 }
