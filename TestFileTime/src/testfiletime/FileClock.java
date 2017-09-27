@@ -29,7 +29,7 @@ public class FileClock implements Runnable {
     @Override
     public void run() {
 
-        int perQuantiSecondi = 12;  //quanti secondi dovrò stare nel metodo run();
+        int perQuantiSecondi = 15;  //quanti secondi dovrò stare nel metodo run();  in 15 secondi eliminero tutti
         int dopoQuanto = r.nextInt(perQuantiSecondi);   // dopo quanti secondi dovrò provare ad interrompere qualcuno...
 
         int aggiorna = 1;   //Ogni aggiorna secondi stampo il mio stato  
@@ -54,7 +54,7 @@ public class FileClock implements Runnable {
                 //Zombie perchè anche dopo la morte continua a vivere , come gli Zombie ;-)
             }
             // Se é arrivato il momento di interrompere qualcuno lo facciamo
-            if (contatoreSecondi >= dopoQuanto) {
+            if (contatoreSecondi >= dopoQuanto){
                 this.interrompiUnThread();
                 contatoreSecondi = contatoreSecondi + r.nextInt(perQuantiSecondi - contatoreSecondi);
             }
