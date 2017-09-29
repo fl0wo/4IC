@@ -1,3 +1,5 @@
+package testing.zone;
+
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -94,11 +96,11 @@ class Watcher extends Thread {
         for (;;) {
             if (!data.getState().equals(s1)) {
                 s1 = data.getState();
-                System.out.println("\t" + data.getName() + " is " + s1);
+                this.toStringData();
             }
             if (!network.getState().equals(s2)) {
                 s2 = network.getState();
-                System.out.println("\t" + network.getName() + " is " + s2);
+                this.toStringNet();
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(10);
