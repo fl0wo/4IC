@@ -1,19 +1,45 @@
-Il thread inizializzati accedono allo stato new , al richiamo del metodo .start(); si sposta nello stato READY
+﻿Il thread inizializzati accedono allo stato NEW, al richiamo del metodo .start();
 alla quale la schedular decide di prendere il thread (prende prima quelli in base alla convenienienza) e di spostarlo nello stato RUNNING
 Il nostro thread durante lo stato RUNNING puo accedere a tre stati diversi "WAITING" "TIMED WAITING" E "BLOCKED"
 col metodo td.join(); il nostro thread va in attesa fino a quando il Thread td non va nello stato TERMINATED (ovvero ha finito il metodo run(); o é stato stoppato)
-per stampare lo stado del metodo in attesa bloccato nel metodo join , non ho fatto altro che creare una classe osservatore che implementa un'interfaccia :
-Osservatore che permette di accedere a metodi che concedono di modificare l'oggetto da osservare e metodi che permettono di stampare l'aggiornamento;
+per stampare lo stado del metodo in attesa bloccato nel metodo join(); , non ho fatto altro che creare una classe osservatore che implementa un'interfaccia :
+Osservatore che permette di accedere a metodi che concedono di accedere ad informazioni delll'oggetto da osservare e metodi che permettono di stampare l'aggiornamento;
 Mentre l'intefaccia Osserato che va data alla classe che viene osservato che permette di impostare da chi farsi osservare, o notificare l'eventuale aggiornamento.
 
-Prima del td.join(); Creo il Thread osservatore : Thread osservato = new Thread(new Osserva(Thread.currentThread()),"TD");
-lo metto Ready cosi lo scheduler lo runna  osservato.start(); 
-e infine chiamo il metodo join();
+Purtroppo affidare queste interfaccie ai Thread ha poco senso in quanto ....
 
-Quindi il nostro thread osservatore non fa altro che stampare lo stato del thread che gli abbiamo passato come parametro (che é andato nello stato WAITING in quanto ha chiamato join();)
-dopo il join mi chiedo se il Thread torna RUNNABLE o prima va in un altro stato , quindi aggiungo le seguenti righe di codice : 
+Per stampare il cambiamento dello stato di un thread , il thread stesso che sarebbe L'OSSERVATO non puo mandare la notifica agli OSSERVATORI in quanto lui non puo sapere che cambierebbe lo stato in WAITING ne prima del join(); manco meno dopo , in quanto lo stato WAITING causato dal metodo join(); non é TIMED_WAITING quindi non si sa il tempo in cui il thread starà in attesa....
 
+Di conseguenza il cambiamento di stato del Thread lo vedrà un Thread OSSERVATORE e non sarà il Thread OSSERVATO a dire agli OSSERVATORI che ha cambiato lo stato.
+Più osservatori possono osservare i cambiamenti di un Thread.
+
+Reso conto: un thread durante l'attesa del metodo join(); ossia un'attesa non definita dal tempo in quanto stiamo aspettando che un altro thread finisca o venga stoppato (entrando nello Stato TERMINATED) é nello stato WAITING....
+
+
+Per notificare il cambiamento dello Stato di un Thread ho fatto cosi:
+
+        aggiorna();//NEW 
+        
+        while (!daOsservare.getState().name().equals("TERMINATED")) {		// Fino a quando lo stato non e TERMINATED sto nel while
+            String statoPrecedente = daOsservare.getState().name();
+            while (statoPrecedente.equals(daOsservare.getState().name())) {
+            }
+            aggiorna(); // CAMBIAMENTO STATO
+        }
+        
+        aggiorna(); // TERMINATED
+
+Discorso dello stato BLOCKED :
+
+	Dopo lo stato WAITING per una frazzione di attimo va nello stato BLOCKED nella quale la scheduler si chiede se la risorsa che il Thread occupera é gia occupata da un altro Thread , se no
+	il thread va RUNNABLE , altrimenti il thread sta BLOCKED fino a quando la scheduler non rileva la risorsa libera di nuovo ... nello stato BLOCKED il thread é inattivo e non consuma neanche
+	un ciclo della CPU.
+
+Differenza tra WAITING e BLOCKED :
+	Lunica differenza é che sostanzialmente nello Stato BLOCKED stiamo aspettando che una risorsa si liberi per poterci accedere , quindi siamo in attesa, nel WAITING , stiamo in attesa anche li , ma la risorsa che é occupata non c'é...
                 
+Per vedere se lo stato BLOCKED é rilevabile:
+
             // Sto nel while fino a quando il thread che era in WAITING non va in BLOCKED
             // Se la mia teoria fosse sbagliata non uscirebbe mai dal while
             while(daOsservare.getState()!=Thread.State.BLOCKED){
@@ -22,20 +48,5 @@ dopo il join mi chiedo se il Thread torna RUNNABLE o prima va in un altro stato 
             // c'é un istante in cui é BLOCKED.
             aggiorna();
 
-
-                /*
-                /////////////IPOTESI MIA////////////////
-                Sono piuttosto convinto del fatto che un Thread prima di tornare RUNNABLE
-                debba spostarsi in uno stato chiamato "BLOCKED" nella quale il thread é inattivo,
-                e ci va se e solo se sta provando ad accedere ad una risorsa (Object) che é
-                gia utilizzata da un altro Thread , che quindi attenderemo che torni disponibile
-                , tutte queste decisioni sono ovviamente prese dalla scheduler...
-                */
-
-Reso conto: un thread durante l'attesa del metodo join(); ossia un'attesa non definita dal tempo in quanto stiamo aspettando che un altro thread finisca o venga stoppato (entrando nello Stato TERMINATED)
-	   é nello stato WAITING....
-	Dopo lo stato WAITING per una frazzione di attimo va nello stato BLOCKED nella quale la scheduler si chiede se la risorsa che il Thread occupera é gia occupata da un altro Thread , se no
-	il thread va RUNNABLE , altrimenti il thread sta BLOCKED fino a quando la scheduler non rileva la risorsa libera di nuovo ... nello stato BLOCKED il thread é inattivo e non consuma neanche
-	un ciclo della CPU.
 
 Sabani Florian.
