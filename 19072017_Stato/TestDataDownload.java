@@ -70,4 +70,10 @@ class NetworkConnection extends Thread {
     }
 }
 
+class Watcher extends Thread{
+	
+	Watcher(Thread td,Thread tn){
+		
+	}
 
+}
