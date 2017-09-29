@@ -1,3 +1,0 @@
-javac TestDataDownload.java
-java TestDataDownload
-PAUSE
