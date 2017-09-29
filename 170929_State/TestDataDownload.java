@@ -6,17 +6,26 @@ public class TestDataDownload {
 
     public static void main(String[] args) {
         DataDownloader ddl = new DataDownloader();
-        
+
         Thread td = new Thread(ddl, "DataDownloaderThread");
         Thread tn = new NetworkConnection(td, "NetworkConnectionThread");
 
-        Watcher cambiamenti = new Watcher(td, tn);
-        cambiamenti.start();
+        Watcher watch = new Watcher(td, tn);
+        watch.start();
+
+        tn.start();
+        td.start();
+
+        try {
+            TimeUnit.SECONDS.sleep(6);  //wait for all the threads to complete
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        watch.interrupt();
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
 class DataDownloader implements Runnable {
 
     @Override
@@ -34,7 +43,6 @@ class DataDownloader implements Runnable {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
 class NetworkConnection extends Thread {
 
     private Thread td;
@@ -59,7 +67,6 @@ class NetworkConnection extends Thread {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
 class Watcher extends Thread {
 
     Thread data;
@@ -77,29 +84,28 @@ class Watcher extends Thread {
     public void toStringNet() {
         System.out.println("Network Connection Status :" + network.getState());
     }
-   
+
     @Override
     public void run() {
+        State s1 = data.getState();
+        State s2 = network.getState();
         this.toStringData();
         this.toStringNet();
-        network.start();
-        data.start();
-        this.toStringData();
-        this.toStringNet();
-        try {
-            TimeUnit.SECONDS.sleep(4);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (;;) {
+            if (!data.getState().equals(s1)) {
+                s1 = data.getState();
+                System.out.println("\t" + data.getName() + " is " + s1);
+            }
+            if (!network.getState().equals(s2)) {
+                s2 = network.getState();
+                System.out.println("\t" + network.getName() + " is " + s2);
+            }
+            try {
+                TimeUnit.MILLISECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("\tI'm no more needed");
+                break;
+            }
         }
-        this.toStringData();
-        this.toStringNet();
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        this.toStringData();
-        this.toStringNet();
     }
-
 }
