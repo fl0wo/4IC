@@ -1,5 +1,3 @@
-package testfileclock;
-
 import java.util.*;
 import java.util.concurrent.*;
 

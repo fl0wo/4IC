@@ -1,5 +1,3 @@
-package testfileclock;
-
 public class TestFileClock {
     public static void main(String[] args) {
         int nThread = 5;
