@@ -1,0 +1,5 @@
+Il programma consiste nel stampare il cambiamento dello stato del thread con il richiamo del metodo join().
+I thread una volta creati nel main, sono in stato "NEW", con il metodo .start() sono pronti per l'esequzione e la scheduler li prende e decide di eseguirli(tramite il 
+dispatcher) in un ordine deciso in base a certi suoi criteri. 
+Per accorgersi del cambiamento dello stato del thread abbiamo bisogno di un altra classe chiamata "osservatore" che, dati come parametro il thread, non fa altro che 
+in un while, controllare se lo stato precedente é diverso allo stato attuale , se si , stampo lo stato attuale. Nel fare il controllo ho deciso di usare un controllo tra stringhe.
