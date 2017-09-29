@@ -6,8 +6,27 @@ public class TestDataDownload {
         DataDownloader ddl = new DataDownloader();
         Thread td = new Thread(ddl,"DataDownloaderThread");
         Thread tn = new NetworkConnection(td,"NetworkConnectionThread");
+        System.out.println("Data Downloader Status :"+td.getState());
+        System.out.println("Network Connection Status :"+tn.getState());
         tn.start();
+        System.out.println("Data Downloader Status :"+tn.getState());
         td.start();
+        System.out.println("Network Connection Status :"+td.getState());
+         try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Data Downloader Status :"+tn.getState());
+        System.out.println("Network Connection Status :"+td.getState());
+         try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Data Downloader Status :"+tn.getState());
+        System.out.println("Network Connection Status :"+td.getState());
+        
     }
 }
 
