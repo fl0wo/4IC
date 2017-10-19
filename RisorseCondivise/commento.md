@@ -45,6 +45,9 @@ Metodi principali:
 
 Nel gestirli fa si che ogni thread possa usare anche nello stesso istante più risorse.
 
+    public Scheduler(Task[] arrayTask) {
+        this.arrayTask = arrayTask;
+    }
 
 ## Classe Risorsa
 
@@ -52,4 +55,8 @@ Nel gestirli fa si che ogni thread possa usare anche nello stesso istante più r
 
 Ha una classe Semaphore come campo che ha come n permessi settato ad 1.
 Il valore di risorsa é un tipo Object per convenzione.
+
+    public Risorsa(int numero) {
+        semaphore = new Semaphore(1, true);
+    }
 
